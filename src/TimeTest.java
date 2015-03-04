@@ -13,7 +13,7 @@ public class TimeTest {
 
     private static final String USAGE = "Usage: java TimeTest [/force] source_file target_file buffer_size\n";
 
-    // I assume that as long as the #args is 3 or 4, the args given are valid.
+    // I assume that as long as #args is 3 or 4, the args given are valid.
     public static void main(String[] args) {
         if (args.length < 3 || args.length > 4) {
             System.out.println(USAGE);
@@ -30,6 +30,8 @@ public class TimeTest {
         final long start = System.currentTimeMillis();
         boolean wasWritten = copyFile(src, dst, buf, overwrite);
         final long end = System.currentTimeMillis();
+
+        // output results
         if (wasWritten)
             System.out.println("File " + src + " was copied to " + dst + "\nTotal time: " + (end - start) + "ms");
         else
@@ -57,8 +59,10 @@ public class TimeTest {
                 dst.write(buffer);
 
             return true;
+
         } catch (IOException e) {
             System.err.println("Error opening reader/writer.");
+
         } finally {
             try {
                 if (src != null) src.close();
