@@ -4,20 +4,23 @@
  */
 
 
+import java.io.File;
 import java.io.FileReader;
 import java.io.FileWriter;
 import java.io.IOException;
 
 public class TimeTest {
 
-    private static final String USAGE = "Usage: java TimeTest [/force] source_file target_file buffer_size\n";
-    private static final String ERR_OPEN = "Error opening reader/writer.\n";
+    private static final String ERR_USAGE = "Usage: java TimeTest [/force] source_file target_file buffer_size\n";
+    private static final String ERR_OPEN  = "Error opening reader/writer.\n";
     private static final String ERR_CLOSE = "Error closing reader/writer.\n";
+    private static final String ERR_COPY  = "File %s could not be copied to file %s\n";
+    private static final String DID_COPY  = "File %s was copied to %s\nTotal time: %dms\n";
 
     // I assume that as long as #args is 3 or 4, the args given are valid.
     public static void main(String[] args) {
         if (args.length < 3 || args.length > 4) {
-            System.out.println(USAGE);
+            System.out.println(ERR_USAGE);
             System.exit(1);
         }
 
@@ -34,9 +37,9 @@ public class TimeTest {
 
         // output results
         if (wasWritten)
-            System.out.println("File " + src + " was copied to " + dst + "\nTotal time: " + (end - start) + "ms");
+            System.out.printf(DID_COPY, src, dst, (end - start));
         else
-            System.out.println("File " + src + " could not be copied to " + dst);
+            System.out.printf(ERR_COPY, src, dst);
     }
 
     /**
@@ -52,9 +55,14 @@ public class TimeTest {
         FileReader src = null;
         FileWriter dst = null;
         try {
+            // check for file existence
+            if (!bOverwrite)
+                if ((new File(toFileName)).exists())
+                    return false;
+
             // initialize
             src = new FileReader(srcFileName);
-            dst = new FileWriter(toFileName, !bOverwrite);
+            dst = new FileWriter(toFileName);
             char[] buffer = new char[bufferSize];
 
             // read and write
