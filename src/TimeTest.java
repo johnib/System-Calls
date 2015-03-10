@@ -4,7 +4,6 @@
  */
 
 
-import java.io.File;
 import java.io.FileReader;
 import java.io.FileWriter;
 import java.io.IOException;
@@ -12,6 +11,8 @@ import java.io.IOException;
 public class TimeTest {
 
     private static final String USAGE = "Usage: java TimeTest [/force] source_file target_file buffer_size\n";
+    private static final String ERR_OPEN = "Error opening reader/writer.\n";
+    private static final String ERR_CLOSE = "Error closing reader/writer.\n";
 
     // I assume that as long as #args is 3 or 4, the args given are valid.
     public static void main(String[] args) {
@@ -51,24 +52,27 @@ public class TimeTest {
         FileReader src = null;
         FileWriter dst = null;
         try {
+            // initialize
             src = new FileReader(srcFileName);
             dst = new FileWriter(toFileName, !bOverwrite);
             char[] buffer = new char[bufferSize];
 
-            while (src.read(buffer, 0, bufferSize) != -1)
-                dst.write(buffer);
+            // read and write
+            int size;
+            while ((size = src.read(buffer, 0, bufferSize)) != -1)
+                dst.write(buffer, 0, size);
 
             return true;
 
         } catch (IOException e) {
-            System.err.println("Error opening reader/writer.");
+            System.err.println(ERR_OPEN);
 
         } finally {
             try {
                 if (src != null) src.close();
                 if (dst != null) dst.close();
             } catch (IOException e) {
-                System.err.println("Error closing reader/writer.");
+                System.err.println(ERR_CLOSE);
             }
         }
 
