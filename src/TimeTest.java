@@ -20,15 +20,30 @@ public class TimeTest {
     // I assume that as long as #args is 3 or 4, the args given are valid.
     public static void main(String[] args) {
         if (args.length < 3 || args.length > 4) {
-            System.out.println(ERR_USAGE);
+            System.out.printf(ERR_USAGE);
             System.exit(1);
         }
 
-        // parse arguments
-        final boolean overwrite = (args.length == 4);
+        // check parse arguments
         final String src = args[args.length - 3];
         final String dst = args[args.length - 2];
-        final int buf = Integer.parseInt(args[args.length - 1]);
+
+        boolean overwrite = false;
+        if (args.length == 4)
+            if (args[0].equals("/force"))
+                overwrite = true;
+            else {
+                System.out.printf(ERR_USAGE);
+                System.exit(1);
+            }
+
+        int buf = 0;
+        try {
+            buf = Integer.parseInt(args[args.length - 1]);
+        } catch (Exception e) {
+            System.out.printf(ERR_USAGE);
+            System.exit(-1);
+        }
 
         // copy file
         final long start = System.currentTimeMillis();
@@ -73,14 +88,14 @@ public class TimeTest {
             return true;
 
         } catch (IOException e) {
-            System.err.println(ERR_OPEN);
+            System.err.printf(ERR_OPEN);
 
         } finally {
             try {
                 if (src != null) src.close();
                 if (dst != null) dst.close();
             } catch (IOException e) {
-                System.err.println(ERR_CLOSE);
+                System.err.printf(ERR_CLOSE);
             }
         }
 
